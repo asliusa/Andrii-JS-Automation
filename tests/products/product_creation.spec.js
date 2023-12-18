@@ -8,29 +8,13 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('New product creation', () => {
   test('should add new valid product', async ({ page }) => {
-    // page.getByText('New product').click();
-
-    // let randomProductName = faker.commerce.productName();
-    // let randomProductDescription = faker.commerce.productDescription();
-    // let randomProductImageUrl = faker.image.urlPicsumPhotos();
-    // let randomProductPrice = faker.commerce.price();
-    
     let randomProduct = {
       title: faker.commerce.productName(), 
       description: faker.commerce.productDescription(),
       imageUrl: faker.image.urlPicsumPhotos(),
       price: faker.commerce.price()
     };
-
-    fillInProductDetails(page, randomProduct);
-
-    // await page.locator("#product_title5").fill(randomProductName);
-    // await page.locator("#product_description").fill(randomProductDescription);
-    // await page.locator("#product_image_url").fill(randomProductImageUrl);
-    // await page.locator("#product_price").fill(randomProductPrice);
-
-    const createProductButton = page.getByText('Create Product');
-    createProductButton.click();
+    fillInProductDetails(page,randomProduct);
 
     const notice = page.locator("#notice");
     await expect(notice).toHaveText('Product was successfully created.');
@@ -41,29 +25,69 @@ test.describe('New product creation', () => {
     await expect(page.locator("#product_preview_price")).toContainText(randomProduct['price'].slice(0,-1));
   });
 
-  // test('should show validation for missing product title', async ({ page }) => {
-    
-  //   await page.locator("#product_description").fill(randomProductDescription);
-  //   await page.locator("#product_image_url").fill(randomProductImageUrl);
-  //   await page.locator("#product_price").fill(randomProductPrice);
+  test('should validate empty product title', async ({ page }) => {
+    let randomProduct = {
+      title: '', 
+      description: faker.commerce.productDescription(),
+      imageUrl: faker.image.urlPicsumPhotos(),
+      price: faker.commerce.price()
+    };
+    fillInProductDetails(page,randomProduct);
 
-  //   const createProductButton = page.getByText('Create Product');
-  //   await createProductButton.click();
+    const notice = page.locator("#error_explanation");
+    await expect(notice).toContainText('1 error prohibited this product from being saved:');
+    await expect(notice).toContainText("Title can't be blank");
+  });
 
-  //   const notice = page.locator("#notice");
-  //   await expect(notice).toHaveText('Product was successfully created.');
+  test('should validate empty product description', async ({ page }) => {
+    let randomProduct = {
+      title: faker.commerce.productName(), 
+      description: '',
+      imageUrl: faker.image.urlPicsumPhotos(),
+      price: faker.commerce.price()
+    };
+    fillInProductDetails(page,randomProduct);
 
-  //   await expect(page.locator("#product_preview_title")).toContainText(randomProductName);
-  //   await expect(page.locator("#product_preview_description")).toContainText(randomProductDescription);
-  //   await expect(page.locator("#product_preview_image_url")).toContainText(randomProductImageUrl);
-  //   await expect(page.locator("#product_preview_price")).toContainText(randomProductPrice.slice(0,-1));
-  // });
+    const notice = page.locator("#error_explanation");
+    await expect(notice).toContainText('1 error prohibited this product from being saved:');
+    await expect(notice).toContainText("Description can't be blank");
+  });
 
-  function fillInProductDetails(page, params){
-    page.locator("#product_title5").fill(params['title']);
-    page.locator("#product_description").fill(params['description']);
-    page.locator("#product_image_url").fill(params['imageUrl']);
-    page.locator("#product_price").fill(params['price']);
+  test('should validate empty product imageURL', async ({ page }) => {
+    let randomProduct = {
+      title: faker.commerce.productName(), 
+      description: faker.commerce.productDescription(),
+      imageUrl: '',
+      price: faker.commerce.price()
+    };
+    fillInProductDetails(page,randomProduct);
+
+    const notice = page.locator("#error_explanation");
+    await expect(notice).toContainText('1 error prohibited this product from being saved:');
+    await expect(notice).toContainText("Image url can't be blank");
+  });
+
+  test('should validate non-number product price', async ({ page }) => {
+    let randomProduct = {
+      title: faker.commerce.productName(), 
+      description: faker.commerce.productDescription(),
+      imageUrl: faker.image.urlPicsumPhotos(),
+      price: 'zero'
+    };
+    fillInProductDetails(page,randomProduct);
+
+    const notice = page.locator("#error_explanation");
+    await expect(notice).toContainText('1 error prohibited this product from being saved:');
+    await expect(notice).toContainText("Price is not a number");
+  });
+
+  async function fillInProductDetails(page, params){
+    await page.locator("#product_title5").fill(params['title']);
+    await page.locator("#product_description").fill(params['description']);
+    await page.locator("#product_image_url").fill(params['imageUrl']);
+    await page.locator("#product_price").fill(params['price']);
+    const createProductButton = page.getByText('Create Product');
+    await createProductButton.click();
   }
 
 });
