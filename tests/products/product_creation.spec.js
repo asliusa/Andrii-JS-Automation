@@ -27,10 +27,7 @@ test.describe('New product creation', () => {
 
   test('should validate empty product title', async ({ page }) => {
     let randomProduct = {
-      title: '', 
-      description: faker.commerce.productDescription(),
-      imageUrl: faker.image.urlPicsumPhotos(),
-      price: faker.commerce.price()
+      title: ' '
     };
     fillInProductDetails(page,randomProduct);
 
@@ -41,10 +38,7 @@ test.describe('New product creation', () => {
 
   test('should validate empty product description', async ({ page }) => {
     let randomProduct = {
-      title: faker.commerce.productName(), 
-      description: '',
-      imageUrl: faker.image.urlPicsumPhotos(),
-      price: faker.commerce.price()
+      description: ' '
     };
     fillInProductDetails(page,randomProduct);
 
@@ -55,10 +49,7 @@ test.describe('New product creation', () => {
 
   test('should validate empty product imageURL', async ({ page }) => {
     let randomProduct = {
-      title: faker.commerce.productName(), 
-      description: faker.commerce.productDescription(),
-      imageUrl: '',
-      price: faker.commerce.price()
+      imageUrl: ''
     };
     fillInProductDetails(page,randomProduct);
 
@@ -69,9 +60,6 @@ test.describe('New product creation', () => {
 
   test('should validate non-number product price', async ({ page }) => {
     let randomProduct = {
-      title: faker.commerce.productName(), 
-      description: faker.commerce.productDescription(),
-      imageUrl: faker.image.urlPicsumPhotos(),
       price: 'zero'
     };
     fillInProductDetails(page,randomProduct);
@@ -82,10 +70,10 @@ test.describe('New product creation', () => {
   });
 
   async function fillInProductDetails(page, params){
-    await page.locator("#product_title5").fill(params['title']);
-    await page.locator("#product_description").fill(params['description']);
-    await page.locator("#product_image_url").fill(params['imageUrl']);
-    await page.locator("#product_price").fill(params['price']);
+    await page.locator("#product_title5").fill(params['title'] || faker.commerce.productName() );
+    await page.locator("#product_description").fill(params['description'] || faker.commerce.productDescription());
+    await page.locator("#product_image_url").fill(params['imageUrl'] || faker.image.urlPicsumPhotos());
+    await page.locator("#product_price").fill(params['price'] || faker.commerce.price());
     const createProductButton = page.getByText('Create Product');
     await createProductButton.click();
   }
