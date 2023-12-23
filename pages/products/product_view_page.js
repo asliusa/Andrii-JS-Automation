@@ -10,6 +10,7 @@ export class ProductViewPage extends BasePage {
       this.productDescriptionLabel = page.locator("#product_preview_description");
       this.productImageUrlLabel = page.locator("#product_preview_image_url");
       this.productPriceLabel = page.locator("#product_preview_price");
+      this.destroyProductButton = page.getByText('Destroy this product');
     }
 
     async verifyProductDetails(params) {
@@ -17,5 +18,9 @@ export class ProductViewPage extends BasePage {
       await expect(this.productDescriptionLabel).toContainText(params['description']);
       await expect(this.productImageUrlLabel).toContainText(params['image_url']);
       await expect(this.productPriceLabel).toContainText(params['price'].slice(0,-1));
+    }
+
+    async clickDestroyButton(){
+      this.destroyProductButton.click();
     }
   };
