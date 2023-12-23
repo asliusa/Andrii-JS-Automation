@@ -1,9 +1,11 @@
 // @ts-check
 import { faker } from '@faker-js/faker/locale/en';
+const { ProductCreateFormPage } = require('../../pages/products/product_create_form_page');
 const { test, expect } = require('@playwright/test');
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('http://localhost:3000/products/new');
+  const productCreateFormPage = new ProductCreateFormPage(page);
+  await productCreateFormPage.goto();
 });
 
 test.describe('New product creation', () => {
@@ -14,10 +16,9 @@ test.describe('New product creation', () => {
       imageUrl: faker.image.urlPicsumPhotos(),
       price: faker.commerce.price()
     };
-    fillInProductDetails(page,randomProduct);
-
-    const notice = page.locator("#notice");
-    await expect(notice).toHaveText('Product was successfully created.');
+    const productCreateFormPage = new ProductCreateFormPage(page);
+    await productCreateFormPage.fillInProductDetails(randomProduct);
+    await productCreateFormPage.verifyNoticeMessage('Product was successfully created.');
 
     await expect(page.locator("#product_preview_title")).toContainText(randomProduct['title']);
     await expect(page.locator("#product_preview_description")).toContainText(randomProduct['description']);
@@ -26,56 +27,31 @@ test.describe('New product creation', () => {
   });
 
   test('should validate empty product title', async ({ page }) => {
-    let randomProduct = {
-      title: ' '
-    };
-    fillInProductDetails(page,randomProduct);
-
-    const notice = page.locator("#error_explanation");
-    await expect(notice).toContainText('1 error prohibited this product from being saved:');
-    await expect(notice).toContainText("Title can't be blank");
+    const productCreateFormPage = new ProductCreateFormPage(page);
+    await productCreateFormPage.fillInProductDetails({ title: ' ' });
+    await productCreateFormPage.verifyValidationMessage('1 error prohibited this product from being saved:');
+    await productCreateFormPage.verifyValidationMessage("Title can't be blank");
   });
 
   test('should validate empty product description', async ({ page }) => {
-    let randomProduct = {
-      description: ' '
-    };
-    fillInProductDetails(page,randomProduct);
-
-    const notice = page.locator("#error_explanation");
-    await expect(notice).toContainText('1 error prohibited this product from being saved:');
-    await expect(notice).toContainText("Description can't be blank");
+    const productCreateFormPage = new ProductCreateFormPage(page);
+    await productCreateFormPage.fillInProductDetails({ description: ' ' });
+    await productCreateFormPage.verifyValidationMessage('1 error prohibited this product from being saved:');
+    await productCreateFormPage.verifyValidationMessage("Description can't be blank");
   });
 
   test('should validate empty product imageURL', async ({ page }) => {
-    let randomProduct = {
-      imageUrl: ''
-    };
-    fillInProductDetails(page,randomProduct);
-
-    const notice = page.locator("#error_explanation");
-    await expect(notice).toContainText('1 error prohibited this product from being saved:');
-    await expect(notice).toContainText("Image url can't be blank");
+    const productCreateFormPage = new ProductCreateFormPage(page);
+    await productCreateFormPage.fillInProductDetails({ imageUrl: ' ' });
+    await productCreateFormPage.verifyValidationMessage('1 error prohibited this product from being saved:');
+    await productCreateFormPage.verifyValidationMessage(`Image url can't be blank`);
   });
 
   test('should validate non-number product price', async ({ page }) => {
-    let randomProduct = {
-      price: 'zero'
-    };
-    fillInProductDetails(page,randomProduct);
-
-    const notice = page.locator("#error_explanation");
-    await expect(notice).toContainText('1 error prohibited this product from being saved:');
-    await expect(notice).toContainText("Price is not a number");
+    const productCreateFormPage = new ProductCreateFormPage(page);
+    await productCreateFormPage.fillInProductDetails({ price: 'zero' });
+    await productCreateFormPage.verifyValidationMessage('1 error prohibited this product from being saved:');
+    await productCreateFormPage.verifyValidationMessage(`Price is not a number`);
   });
-
-  async function fillInProductDetails(page, params){
-    await page.locator("#product_title5").fill(params['title'] || faker.commerce.productName() );
-    await page.locator("#product_description").fill(params['description'] || faker.commerce.productDescription());
-    await page.locator("#product_image_url").fill(params['imageUrl'] || faker.image.urlPicsumPhotos());
-    await page.locator("#product_price").fill(params['price'] || faker.commerce.price());
-    const createProductButton = page.getByText('Create Product');
-    await createProductButton.click();
-  }
 
 });
