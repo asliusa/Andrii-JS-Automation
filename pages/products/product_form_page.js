@@ -2,7 +2,7 @@ const { expect } = require('@playwright/test');
 const { BasePage } = require('../base_page');
 import { faker } from '@faker-js/faker/locale/en';
 
-exports.ProductCreateFormPage = class ProductCreateFormPage extends BasePage {
+exports.ProductFormPage = class ProductFormPage extends BasePage {
     constructor(page) {
       super(page);
       this.page = page;
@@ -11,6 +11,7 @@ exports.ProductCreateFormPage = class ProductCreateFormPage extends BasePage {
       this.productImageUrlInput = page.locator("#product_image_url");
       this.productPriceInput = page.locator("#product_price");
       this.createProductButton = page.getByText('Create Product');
+      this.updateProductButton = page.getByText('Update Product');
       this.validationErrorLabel = page.locator("#error_explanation");
     }
   
@@ -23,7 +24,14 @@ exports.ProductCreateFormPage = class ProductCreateFormPage extends BasePage {
       await this.productDescriptionInput.fill(params['description'] || faker.commerce.productDescription());
       await this.productImageUrlInput.fill(params['imageUrl'] || faker.image.urlPicsumPhotos());
       await this.productPriceInput.fill(params['price'] || faker.commerce.price());
+    }
+
+    async clickCreateButton() {
       await this.createProductButton.click();
+    }
+
+    async clickUpdateButton() {
+      await this.updateProductButton.click();
     }
 
     async verifyValidationMessage(message) {
