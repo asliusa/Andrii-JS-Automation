@@ -19,7 +19,7 @@ test.describe('Edit product', () => {
     let randomProduct = {
       title: faker.commerce.productName(), 
       description: faker.commerce.productDescription(),
-      imageUrl: faker.image.urlPicsumPhotos(),
+      image_url: faker.image.urlPicsumPhotos(),
       price: faker.commerce.price()
     };
     const productFormPage = new ProductFormPage(page);

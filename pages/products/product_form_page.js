@@ -2,7 +2,7 @@ const { expect } = require('@playwright/test');
 const { BasePage } = require('../base_page');
 import { faker } from '@faker-js/faker/locale/en';
 
-exports.ProductFormPage = class ProductFormPage extends BasePage {
+export class ProductFormPage extends BasePage {
     constructor(page) {
       super(page);
       this.page = page;
@@ -22,7 +22,7 @@ exports.ProductFormPage = class ProductFormPage extends BasePage {
     async fillInProductDetails(params) {
       await this.productTitleInput.fill(params['title'] || faker.commerce.productName() );
       await this.productDescriptionInput.fill(params['description'] || faker.commerce.productDescription());
-      await this.productImageUrlInput.fill(params['imageUrl'] || faker.image.urlPicsumPhotos());
+      await this.productImageUrlInput.fill(params['image_url'] || faker.image.urlPicsumPhotos());
       await this.productPriceInput.fill(params['price'] || faker.commerce.price());
     }
 

@@ -2,7 +2,7 @@ const { expect } = require('@playwright/test');
 const { BasePage } = require('../base_page');
 import { faker } from '@faker-js/faker/locale/en';
 
-exports.ProductViewPage = class ProductViewPage extends BasePage {
+export class ProductViewPage extends BasePage {
     constructor(page) {
       super(page);
       this.page = page;
@@ -15,7 +15,7 @@ exports.ProductViewPage = class ProductViewPage extends BasePage {
     async verifyProductDetails(params) {
       await expect(this.productTitleLabel).toContainText(params['title']);
       await expect(this.productDescriptionLabel).toContainText(params['description']);
-      await expect(this.productImageUrlLabel).toContainText(params['imageUrl']);
+      await expect(this.productImageUrlLabel).toContainText(params['image_url']);
       await expect(this.productPriceLabel).toContainText(params['price'].slice(0,-1));
     }
   };
