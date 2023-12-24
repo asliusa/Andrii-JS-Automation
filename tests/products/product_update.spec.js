@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker/locale/en';
 const { ProductFormPage } = require('../../pages/products/product_form_page');
 const { ProductViewPage } = require('../../pages/products/product_view_page');
 const { test, expect } = require('@playwright/test');
+import { postData } from '../helpers';
 
 test.describe('Edit product', () => {
   test('should add new valid product', async ({ page }) => {
@@ -30,16 +31,5 @@ test.describe('Edit product', () => {
     const productViewPage = new ProductViewPage(page);
     await productViewPage.verifyProductDetails(randomProduct);
   });
-
-  async function postData(url = "", data = {}) {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    return response.json();
-  }
 
 });

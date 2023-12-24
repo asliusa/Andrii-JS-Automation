@@ -21,6 +21,6 @@ export class ProductViewPage extends BasePage {
     }
 
     async clickDestroyButton(){
-      this.destroyProductButton.click();
+      await this.destroyProductButton.click();
     }
   };

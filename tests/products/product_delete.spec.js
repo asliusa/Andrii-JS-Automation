@@ -4,15 +4,16 @@ const { ProductFormPage } = require('../../pages/products/product_form_page');
 const { ProductViewPage } = require('../../pages/products/product_view_page');
 const { ProductsPage } = require('../../pages/products/products_page');
 const { test, expect } = require('@playwright/test');
+import { postData } from '../helpers';
 
 test.describe('Delete product', () => {
-  test('should delete product from view page', async ({ page }) => {
+  test('should delete product from product view page', async ({ page }) => {
 
     postData('http://localhost:3000/products.json', {
       title: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
       image_url: faker.image.urlPicsumPhotos(),
-      price: 200
+      price: faker.commerce.price()
     }).then((data) => {
       page.goto(`http://localhost:3000/products/${data['id']}`);
     });
@@ -24,15 +25,23 @@ test.describe('Delete product', () => {
     productsPage.verifyNoticeMessage('Product was successfully destroyed.');
   });
 
-  async function postData(url = "", data = {}) {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    return response.json();
-  }
+  test('should delete product from products list page', async ({ page }) => {
 
+    let productData = {
+      title: faker.commerce.productName(),
+      description: faker.commerce.productDescription(),
+      image_url: faker.image.urlPicsumPhotos(),
+      price: faker.commerce.price()
+    }
+
+    await postData('http://localhost:3000/products.json', productData);
+    await page.goto(`http://localhost:3000/products`)
+
+    const productsPage = new ProductsPage(page);
+    await productsPage.clickDestroyButton(productData.title);
+    const productViewPage = new ProductViewPage(page);
+    await productViewPage.verifyProductDetails(productData);
+    await productViewPage.clickDestroyButton();
+    await productsPage.verifyNoticeMessage('Product was successfully destroyed.');
+  });
 });
