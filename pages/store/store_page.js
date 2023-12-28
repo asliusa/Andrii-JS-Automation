@@ -6,6 +6,7 @@ export class StorePage extends BasePage {
       super(page);
       this.page = page;
       this.cartTitle = page.getByText('Your Cart');
+      this.cartProductTitle = page.locator('#cart_product_title');
       this.cartTotalPrice = page.locator('#cart_total_price');
     }
 
@@ -13,13 +14,16 @@ export class StorePage extends BasePage {
       await this.page.locator(`xpath=//h2[.='${productName}']/..//input[@value = 'Add to Cart']`).click();
     }
 
-    async verifyProductInCart(product) {
-      await expect(this.cartTitle).toBeVisible
-      await expect(this.page.locator(`//div[@id='cart']//td[.='${product['title']}']`)).toBeVisible
-      await expect(this.page.locator(`//div[@id='cart']//td[.='${product['price']}']`)).toBeVisible
+    async verifyProductTitleInCart(title) {
+      await expect(this.cartTitle).toBeVisible;
+      await expect(this.cartProductTitle).toContainText(title);
     }
 
-    async verifyCartTotal(price) {
-      await expect(this.cartTotalPrice).toContainText(`$${price.slice(0,-1)}`)
+    async verifyProductPriceInCart(price) {
+      await expect(this.cartProductTitle.locator(`xpath=../td[@id='cart_product_price']`)).toContainText(price);
+    }
+
+    async verifyCartTotal(total) {
+      await expect(this.cartTotalPrice).toContainText(total)
     }
   };
